@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="/public/vendor/bootstrap/css/bootstrap.min.css"
+    />
+    <link rel="stylesheet" type="text/css" href="/public/css/blog-post.css" />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="/public/css/modern-business.css"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="/public/css/simple-sidebar.css"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="/public/font-awesome/css/font-awesome.min.css"
+    />
+    <title>Video Streaming</title>
+  </head>
+  <body>
+
+    <% 
+      months = ["January","February","March","April","May","June","July",
+            "August","September","October","November","December"];
+
+      baseUrl = "http://localhost:3000/";
+    %> 
+
+    <script type="text/javascript">
+      const months = ["January","February","March","April","May","June","July",
+            "August","September","October","November","December"];
+
+      const baseUrl = "http://localhost:3000/";
+    </script>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+      <div class="container">
+        <a href="/" class="navbar-brand">Vloggar</a>
+
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+          <ul class="navbar-nav ml-auto">
+            <% if (typeof isLogin !== "undefined" && isLogin) { %>
+
+              <script type="text/javascript">
+                const readNotification = (self) => {
+                  var _id = self.getAttribute("data-id");
+
+                  fetch("/read-notification", {
+                    "method": "POST", 
+                    headers: new Headers({'Content-Type': 'application/x-www-form-urlencoded'}),
+                    "body":"notificationId=" + _id,})
+                    .then( response => response.json() )
+                    .then(result => {
+                        if (result.status == "error"){
+                          alert(result.message)
+                        }
+                    });
+
+                    return true;
+                };
+
+                // fetch notifications for a particular user and display in dropdown
+                fetch("/get-user", {
+                    "method": "GET",})
+                    .then( response => response.json() )
+                    .then(result => {
+                      if (result.status == "success") {
+                        window.user = result.user;
+
+                        var html = "";
+                        html += '<div class="list-group list-group-flush">';
+                          html += '<a href="/channel/'+window.user._id+'" class="list-group-item list-group-item-action bg-light">My Channel</a>';
+                        html += '</div>';
+
+                        document.getElementById("sidebar-wrapper").innerHTML += html;
+
+                        var html = "";
+
+                        window.user.notifications = window.user.notifications.reverse();
+                        for (var a=0; a < window.user.notifications.length; a++) {
+                          var notification = window.user.notifications[a];
+
+                          if (!notification.is_read) {
+                            if (notification.type == "new_comment") {
+                              html += '<a class="dropdown-item" onclick="return readNotification(this);" data-id="' + notification._id + '" href="/watch/' + notification.video_watch + '">New comment</a>';
+
+                            }
+                          }
+                        }
+
+                        document.getElementById("unread-notifications").innerHTML = html;
+                      }else{
+                        alert(result.message);
+                      }
+                    })
+            </script>
+              
+              <li class="nav-item">
+                <div class="dropdown">
+                  <button 
+                  class="btn btn-secondary dropdown-toggle" 
+                  type="button" 
+                  id="dropdownMenuButton"
+                  data-toggle="dropdown"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                  >
+                  <i class="fa fa-bell fa-fw" style="color: white;"></i>
+                </button>
+                
+                <div class="dropdown-menu" 
+                id="unread-notifications"
+                aria-labelledby="dropdownMenuButton"
+                >
+
+                </div>
+
+                </div>
+              </li>
+
+              <li class="nav-item">
+                <a href="/upload" class="nav-link">Upload Video</a>
+              </li>
+              
+              <li class="nav-item">
+                <a href="/logout" class="nav-link">Logout</a>
+              </li>
+            <% } else { %> 
+
+            
+            <li class="nav-item">
+              <a href="/login" class="nav-link">Login</a>
+            </li>
+
+            <li class="nav-item">
+              <a href="/signup" class="nav-link">Signup</a>
+            </li>
+            <% } %> 
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <!-- end of navbar -->
+    
+    <!-- Main Site Content -->
+    <div class="d-flex" id="wrapper">
+      <div class="bg-light border-right" id="sidebar-wrapper">
+        <% if (typeof isLogin !== "undefined" && isLogin) { %>
+          <div class="list-group list-group-flush">
+            <a href="/watch-history" class="list-group-item list-group-item-action bg-light">History</a>
+          </div>
+        <% } %>  
+      </div>
+
+    

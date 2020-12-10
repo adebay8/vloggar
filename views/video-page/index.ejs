@@ -1,0 +1,97 @@
+<%- include ("../layouts/header") %>
+    <div class="container my-4">
+        <div class="row">
+            <div class="col-lg-8">
+                <h1 class="mt-4">
+                    <%= video.title %> 
+                </h1>
+
+                <p class="lead">
+                    by <a href="/channel/<%= video.user._id %>"><%= video.user.name %></a>
+                </p>
+
+                <hr>
+
+                <p>
+                    Posted on
+                     <% 
+                     const createdAt = new Date(video.createdAt);
+                     const date = createdAt.getDate() + ""; 
+                      %> 
+
+                      <%= date.padStart(2, "0") + " " + months[createdAt.getMonth()] + "," + createdAt.getFullYear()%> 
+                </p>
+
+                <hr>
+
+                <input type="hidden" id="videoId" value="<%= video._id %>">
+                <input type="hidden" id="category" value="<%= video.category %>">
+
+                <video id="videoPlayer" controls style="width: 100%;" 
+                poster="<%= baseUrl + video.thumbnail%>"
+                src="<%= baseUrl + video.filePath %>"
+                >
+                </video>
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <p class="mb-0">
+                            <i class="fa fa-eye"></i>
+                            <%= video.views %> views
+                        </p>
+                    </div>
+
+                    <div class="col-md-4">
+                        <%- include ("like-dislike.ejs") %> 
+                    </div>
+
+                    <div class="col-md-4">
+                        <%- include ("subscribe") %> 
+                    </div>
+                </div>
+
+                <hr>
+
+                <p class="text-center">
+                    <b>Category:</b>
+                    <%= video.category %> 
+                </p>
+
+                <hr>
+
+                <p class="lead">
+                    <%= video.description %> 
+                </p>
+
+                <%- include ("comments") %> 
+            </div>
+
+            <div class="col-md-4">
+                <%- include ("sidebar") %> 
+            </div>
+        </div>
+    </div>
+<%- include ("../layouts/footer") %> 
+
+<% if (typeof isLogin !== "undefined" && isLogin ) { %>
+    <script>
+        window.onbeforeunload = function() {
+            var videoPlayer = document.getElementById("videoPlayer");
+            var watched = Math.floor(videoPlayer.currentTime);
+
+            if (watched > 0) {
+                var videoId = document.getElementById("videoId").value;
+
+                fetch("/save-history", {
+                "method": "POST", 
+                headers: new Headers({'Content-Type': 'application/x-www-form-urlencoded'}),
+                "body":"videoId=" + videoId + "&watched="+watched
+                })
+                .then( response => response.json() )
+                .then( (result) => {
+                    console.log(result);
+                })
+            }
+        }
+    </script>
+<% } %>

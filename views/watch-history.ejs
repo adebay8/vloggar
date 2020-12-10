@@ -1,0 +1,39 @@
+<%- include ("layouts/header") %>
+    <div class="container my-4">
+        <div class="row text-center">
+            <% videos.forEach((video)=>{ %>
+                <div class="col-md-3 mb-4">
+                    <div class="card h-100">
+                        <img src="<%= baseUrl + video.thumbnail %> " alt="" class="card-img-top">
+                        <div class="card-body">
+                            <h4 class="card-title"><%= video.title %></h4>
+                            <p class="card-text"><%= video.category %></p>
+                            <% var videoDuration = (video.minutes * 60) + video.seconds %>
+                            <!-- add this ejs to style of the progress bar -->
+                            <%# Math.floor((video.watched / videoDuration ) * 100) %>
+                            <div class="progress">
+                                <div class="progress-bar" role="progressbar" style="width:<%= Math.floor((video.watched / videoDuration ) * 100) %>%;" aria-valuenow="<%= video.watched %>" aria-valuemin="0" aria-valuemax="<%= videoDuration %>">
+                                    <% 
+                                        var minutes = Math.floor(video.watched / 60);
+                                        var seconds = video.watched - (minutes * 60 );
+                                    %> 
+
+                                    <%= minutes + ":" + seconds %> 
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-footer">
+                            <form action="/delete-from-history" method="POST">
+                                <input type="hidden" name="videoId" value="<%= video.videoId %>">
+                                <a href="/watch/<%= video.watch %>" class="btn btn-primary">View</a>
+                                <input type="submit" class="btn btn-danger" value="Delete">
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            <% }) %> 
+        </div>
+    </div>
+<%- include ("layouts/footer") %> 

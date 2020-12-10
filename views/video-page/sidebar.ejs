@@ -1,0 +1,33 @@
+<div class="row">
+    <% if (playlist.length > 0) {%>
+        <div class="card my-4">
+            <h5 class="card-header">
+                Playlist
+            </h5>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <ul class="list-unstyled mb-0">
+                            <% playlist.forEach (item => { %>
+                                <% if (item.watch == video.watch) { %>
+                                    <li style="background: lightgray;">
+                                <% }else{ %>
+                                    <li>
+                                <% } %> 
+                                <img src="<%= baseUrl + item.thumbnail %>" class="img-fluid" alt="">
+                                <h3>
+                                    <a href="/playlist/<%= playlistId + "/" + item.watch %>"><%= item.title %></a>
+                                </h3>
+                            </li>
+                            <% }) %> 
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <% } %> 
+</div>
+
+<div class="row">
+    <%- include ("related-videos") %> 
+</div>

@@ -1,0 +1,26 @@
+<button class="btn btn-danger" type="button" onclick="doSubscribe();">
+    Subscribe
+    <strong id="total-subscribers"><%= video.user.subscribers %></strong>
+</button>
+
+<script>
+    const doSubscribe = ()=>{
+        var videoId = document.getElementById("videoId").value;
+        fetch("/do-subscribe", {
+            "method": "POST",
+            "headers": new Headers({'Content-Type': 'application/x-www-form-urlencoded'}),
+            "body": "videoId="+videoId
+        })
+        .then(response => response.json())
+        .then(result => {
+            console.log(result);
+            if (result.status == "success") {
+                var totalSubscribers = document.getElementById("total-subscribers").innerHTML;
+                totalSubscribers++;
+                document.getElementById("total-subscribers").innerHTML = totalSubscribers;
+            }else{
+                alert(result.message)
+            }
+        })
+    }
+</script>

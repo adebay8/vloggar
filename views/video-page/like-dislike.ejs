@@ -1,0 +1,53 @@
+<button type="button" class="btn btn-default" onclick="doLike();">
+    <i class="fa fa-thumbs-up"></i>
+
+    <span id="likes"><%= video.liked_by.length %></span>
+</button>
+
+<button type="button" class="btn btn-default" onclick="doDislike();">
+    <i class="fa fa-thumbs-down"></i>
+
+    <span id="dislikes"><%= video.disliked_by.length %></span>
+</button>
+
+<script type="text/javascript">
+    const doLike =()=>{
+        const videoId = document.getElementById("videoId").value;
+        fetch("/do-like", {
+            "method": "POST", 
+            headers: new Headers({'Content-Type': 'application/x-www-form-urlencoded'}),
+            "body":"videoId=" + videoId})
+        .then( response => response.json() )
+        .then( (result) => {
+            if (result.status == "success"){
+                var likes = document.getElementById("likes").innerHTML;
+                likes = parseInt(likes);
+                likes++;
+                document.getElementById("likes").innerHTML = likes;
+            }else{
+                alert(result.message);
+            }
+            })
+        .catch( error => console.error('error:', error) );
+    }
+
+    const doDislike =()=>{
+        const videoId = document.getElementById("videoId").value;
+        fetch("/do-dislike", {
+            "method": "POST", 
+            headers: new Headers({'Content-Type': 'application/x-www-form-urlencoded'}),
+            "body":"videoId=" + videoId})
+        .then( response => response.json() )
+        .then( (result) => {
+            if (result.status == "success"){
+                var dislikes = document.getElementById("dislikes").innerHTML;
+                dislikes = parseInt(dislikes);
+                dislikes++;
+                document.getElementById("dislikes").innerHTML = dislikes;
+            }else{
+                alert(result.message);
+            }
+            })
+        .catch( error => console.error('error:', error) );
+    }
+</script>

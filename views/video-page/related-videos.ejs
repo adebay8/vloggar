@@ -1,0 +1,36 @@
+<div class="card my-4">
+    <h5 class="card-header">Related Videos</h5>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-lg-12" id="related-videos"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var category = document.getElementById("category").value;
+    var videoId = document.getElementById("videoId").value;
+
+    fetch("/get-related-videos/"+category+"/"+videoId, {
+        "method": "GET",
+    })
+    .then( response => response.json() )
+    .then( (videos) => {
+        var html = "";
+
+        for (var a=0; a<videos.length; a++) {
+            var flag = false;
+            var createdAt = new Date(videos[a].createdAt);
+            var date = createdAt.getDate() + "";
+            date = date.padStart(2, "0") + " " + months[createdAt.getMonth()] + ", " + createdAt.getFullYear();
+
+            html += '<div>';
+                html += '<img class="img-fluid" src="' + baseUrl + videos[a].thumbnail +'"/>';
+                html += '<p>'+videos[a].minutes + ":" +videos[a].seconds+'</p>';
+                html += '<h3><a href="/watch/'+ videos[a].watch + '">' + videos[a].title + '</a></h3>';
+            html += '</div>';
+        }
+
+        document.getElementById("related-videos").innerHTML = html;
+    })
+</script>

@@ -1,0 +1,131 @@
+<%- include ("layouts/header") %>
+    <% if (isMyChannel) { %> 
+        <form action="/change-profile-picture" method="POST" enctype="multipart/form-data" id="form-change-profile-picture">
+            <input type="file" id="input-file-change-profile-picture" style="display: none;" accept="image/*" name="image" required onchange="document.getElementById('form-change-profile-picture').submit();">
+        </form>
+
+        <form action="/change-cover-picture" method="POST" enctype="multipart/form-data" id="form-change-cover-picture">
+            <input type="file" id="input-file-change-cover-photo" style="display: none;" accept="image/*" name="image" required onchange="document.getElementById('form-change-cover-picture').submit();">
+        </form>
+    <% } %>  
+
+    <style>
+        .cover-photo {
+            width: 100%;
+        }
+
+        .profile-photo {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+    </style>
+
+    <div class="container-fluid">
+        <div class="row">
+            <% if (isMyChannel) { %>
+                <img 
+                src="<%= baseUrl + user.coverPhoto %>" 
+                alt="" 
+                style="cursor: pointer;" 
+                class="img-fluid cover-photo" 
+                onerror="this.src = 'http://placehold.it/1900x700'"
+                onclick="document.getElementById('input-file-change-cover-photo').click();"
+                >
+            <% }else{ %>  
+                <img src="<%= baseUrl + user.coverPhoto %>" 
+                alt=""
+                class="img-fluid cover-photo"
+                onerror="this.src='http://placehold.it/1900x700'"
+                > 
+            <% } %> 
+        </div>
+        <div class="container my-4">
+            <div class="row">
+                <div class="col-md-2">
+                    <% if (isMyChannel) {%>
+                        <img src="<%= baseUrl + user.image %> " 
+                        alt=""
+                        style="cursor: pointer;"
+                        class="img-fluid profile-photo"
+                        onerror="this.src='http://placehold.it/150x150'"
+                        onclick="document.getElementById('input-file-change-profile-picture').click();"
+                        >
+                    <% }else {%>
+                        <img src="<%= baseUrl + user.image %> " 
+                        alt=""
+                        class="img-fluid profile-photo"
+                        onerror="this.src='http://placehold.it/150x150'"
+                        >
+                    <% } %>   
+                </div>
+                <div class="col-md-8">
+                    <h3><%= user.name %></h3>
+                    <p><%= user.subscribers %> Subscribers</p>
+                </div>
+            </div>
+        </div>
+
+        <% if (isMyChannel) {%>
+            <form method="POST" action="/create-playlist">
+                <div class="form-group">
+                    <label>Playlist title</label>
+                    <input type="text" name="title" class="form-control" required>
+                </div>
+                <input type="submit" class="btn btn-primary" value="Add Playlist">
+            </form>
+        <% } %> 
+
+        <div class="row my-4">
+            <% user.playlists = user.playlists.reverse();
+                user.playlists.forEach((playlist)=>{ %>
+                    <div class="col-md-4">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h3><%= playlist.title %></h3>
+                            </div>
+                            <div class="card-footer">
+                                <% if (playlist.videos.length > 0) {%>
+                                    <a href="/playlist/<%= playlist._id %>/<%= playlist.videos[0].watch %>" class="btn btn-primary">View</a>
+                                <% }else {%>
+                                    <span>Playlist is empty.</span>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+            <% }) %> 
+        </div>
+
+        <hr>
+        <h1>Channel Videos</h1>
+        <hr>
+
+        <div class="row">
+            <% user.videos = user.videos.reverse();
+                user.videos.forEach(video => { %>
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100">
+                            <img src="<%= baseUrl + video.thumbnail %>" alt="" class="card-img-top"> 
+                            <div class="card-body">
+                                <h4 class="card-title"><%= video.title %></h4>
+                                <p class="card-text"><%= video.category %></p>
+                            </div>    
+                            <div class="card-footer">
+                                <a href="/watch/<%=video.watch%>" class="btn btn-primary">View</a>
+                                
+                                <% if (isMyChannel) {%>
+                                    <a href="/edit/<%=video.watch%>" class="btn btn-warning">Edit</a>
+                                    
+                                    <form action="/delete-video" method="POST" onsubmit="return confirm('Are you sure you want to delete this video?');" style="display: contents;">
+                                        <input type="hidden" name="_id" value="<%= video._id %>">
+                                        <button type="submit" class="btn btn-danger">Delete</button>
+                                    </form>
+                                <% } %>
+                            </div>   
+                        </div>
+                    </div>
+            <% }) %>         
+        </div>
+    </div>
+<%- include ("layouts/footer") %> 
