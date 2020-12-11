@@ -872,9 +872,9 @@ app.post("/change-profile-picture", (req, res) => {
           }
         );
 
-        database.collection("videos").updateOne(
+        database.collection("videos").updateMany(
           {
-            "user._id": req.session.user_id,
+            "user._id": ObjectId(req.session.user_id),
           },
           {
             $set: {
@@ -987,26 +987,25 @@ app.post("/edit", (req, res) => {
                 },
               },
               (error, data) => {
-                if (fields.playlist == "") {
-                  database.collection("users").findOneAndUpdate(
-                    {
-                      $and: [
-                        {
-                          _id: ObjectId(req.session.user_id),
-                        },
-                        {
-                          "videos._id": ObjectId(fields.videoId),
-                        },
-                      ],
-                    },
-                    {
-                      $set: {
-                        "videos.$.title": fields.title,
-                        "videos.$.thumbnail": mainVideo.thumbnail,
+                database.collection("users").findOneAndUpdate(
+                  {
+                    $and: [
+                      {
+                        _id: ObjectId(req.session.user_id),
                       },
-                    }
-                  );
-
+                      {
+                        "videos._id": ObjectId(fields.videoId),
+                      },
+                    ],
+                  },
+                  {
+                    $set: {
+                      "videos.$.title": fields.title,
+                      "videos.$.thumbnail": mainVideo.thumbnail,
+                    },
+                  }
+                );
+                if (fields.playlist == "") {
                   database.collection("users").updateOne(
                     {
                       $and: [

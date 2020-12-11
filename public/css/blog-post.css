@@ -6,3 +6,30 @@
 body {
   padding-top: 56px;
 }
+
+.card__header {
+  transition: transform 0.5s ease;
+}
+
+.card__header:hover {
+  transform: scale(1.1);
+}
+
+.card {
+  border: none;
+}
+
+.video__duration {
+  width: fit-content;
+  padding: 4px;
+  border-radius: 5px;
+  position: absolute;
+  top: 110px;
+  left: 83%;
+}
+
+.channel__profileImage {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+}

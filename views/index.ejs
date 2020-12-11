@@ -1,26 +1,29 @@
 <%- include ("layouts/header") %> 
     <div class="container my-4">
-        <div class="row text-center">
+        <div class="row">
             <% videos.forEach((video)=>{ %>
                 <div class="col-md-3 mb-4">
-                    <div class="card h-100">
-                        <img src="<%= video.thumbnail %>" alt="" class="card-img-top" style="height: 300px;object-fit: cover;">
-                        <p>
-                            <%= video.minutes + ":" + video.seconds %>
-                        </p>
-
-                        <div class="card-body">
-                            <h4 class="card-title">
-                                <%= video.title %>
-                            </h4>
-
-                            <p class="card-text">
-                                <%= video.category %> 
+                    <div class="card h-100" style="position: relative;">
+                        <div class="card__header">
+                            <a href="/watch/<%= video.watch %>">
+                                <img src="<%= video.thumbnail %>" alt="" class="card-img-top" style="height: 150px;object-fit: cover;">
+                            </a>
+                            <p class="text-center bg-dark text-white video__duration">
+                                <%= video.minutes + ":" + video.seconds %>
                             </p>
                         </div>
-
-                        <div class="card-footer">
-                            <a href="/watch/<%= video.watch %>" class="btn btn-primary">View</a>
+                        <div class="card-body d-flex px-0">
+                            <img src="<%= video.user.image %>" alt="" class="channel__profileImage">
+                            <div class="ml-2">
+                                <h6 class="card-title">
+                                    <a href="/watch/<%= video.watch %>" style="text-decoration: none;color:black;">
+                                        <%= video.title %>
+                                    </a>
+                                </h6>
+                                <p class="card-text">
+                                    <%= video.category %> 
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>
