@@ -1247,6 +1247,231 @@ app.get("/playlist/:_id/:watch", (req, res) => {
   );
 });
 
+app.post("/delete-playlist", (req, res) => {
+  if (req.session.user_id) {
+    database.collection("users").findOne(
+      {
+        $and: [
+          {
+            _id: ObjectId(req.session.user_id),
+          },
+          {
+            "playlists._id": ObjectId(req.body._id),
+          },
+        ],
+      },
+      (error, data) => {
+        if (data == null) {
+          res.send("Sorry. You dont own this playlist.");
+          return;
+        }
+        database.collection("users").updateOne(
+          {
+            _id: ObjectId(req.session.user_id),
+          },
+          {
+            $pull: {
+              playlists: {
+                _id: ObjectId(req.body._id),
+              },
+            },
+          }
+        );
+        database.collection("videos").updateMany(
+          {
+            playlists: req.body._id,
+          },
+          {
+            $set: {
+              playlist: "",
+            },
+          }
+        );
+      }
+    );
+    res.redirect("/channel/" + req.session.user_id);
+  } else {
+    res.redirect("/login");
+  }
+});
+
+app.get("/my_subscriptions", (req, res) => {
+  if (req.session.user_id) {
+    getUser(req.session.user_id, (user) => {
+      res.render("subscriptions", {
+        isLogin: true,
+        user: user,
+      });
+    });
+  } else {
+    res.redirect("/login");
+  }
+});
+
+app.post("/remove-channel-from-subscription", (req, res) => {
+  if (req.session.user_id) {
+    database.collection("users").updateOne(
+      {
+        _id: ObjectId(req.session.user_id),
+      },
+      {
+        $pull: {
+          subscriptions: {
+            _id: ObjectId(req.body._id),
+          },
+        },
+      },
+      (error, data) => {
+        if (data.modifiedCount > 0) {
+          database.collection("users").updateOne(
+            {
+              _id: ObjectId(req.body._id),
+            },
+            {
+              $dec: {
+                subscribers: 1,
+              },
+            }
+          );
+          database.collection("videos").updateOne(
+            {
+              "user._id": ObjectId(req.body._id),
+            },
+            {
+              $dec: {
+                "user.$.subscribers": 1,
+              },
+            }
+          );
+        }
+        res.redirect("/my_subscriptions");
+      }
+    );
+  } else {
+    res.redirect("/login");
+  }
+});
+
+app.get("/category_search/:query", (req, res) => {
+  database
+    .collection("videos")
+    .find({
+      category: {
+        $regex: ".*?" + req.params.query + ".*?",
+      },
+    })
+    .toArray((error, videos) => {
+      res.render("search", {
+        isLogin: req.session.user_id ? true : false,
+        videos: videos,
+        query: req.params.query,
+      });
+    });
+});
+
+app.get("/tag_search/:query", (req, res) => {
+  database
+    .collection("videos")
+    .find({
+      tags: {
+        $regex: ".*" + req.params.query + ".*",
+        $options: "i",
+      },
+    })
+    .toArray((error, videos) => {
+      res.render("search", {
+        isLogin: req.session.user_id ? true : false,
+        videos: videos,
+        query: req.params.query,
+      });
+    });
+});
+
+app.get("/search", (req, res) => {
+  database
+    .collection("videos")
+    .find({
+      title: {
+        $regex: req.query.search_query,
+        $options: "i",
+      },
+    })
+    .toArray((error, videos) => {
+      res.render("search", {
+        isLogin: req.session.user_id ? true : false,
+        videos: videos,
+        query: req.query.search_query,
+      });
+    });
+});
+
+app.get("/settings", (req, res) => {
+  if (req.session.user_id) {
+    getUser(req.session.user_id, (user) => {
+      res.render("settings", {
+        isLogin: true,
+        user: user,
+        request: req.query,
+      });
+    });
+  }
+});
+
+app.post("/save_settings", (req, res) => {
+  if (req.session.user_id) {
+    if (req.body.password == "") {
+      database.collection("users").updateOne(
+        {
+          _id: ObjectId(req.session.user_id),
+        },
+        {
+          $set: {
+            name: req.body.name,
+          },
+        }
+      );
+    } else {
+      bcrypt.hash(req.body.password, 10, (error, hash) => {
+        database.collection("users").updateOne(
+          {
+            _id: ObjectId(req.session.user_id),
+          },
+          {
+            $set: {
+              name: req.body.name,
+              password: hash,
+            },
+          }
+        );
+      });
+    }
+    database.collection("users").updateMany(
+      {
+        "subscriptions._id": ObjectId(req.session.user_id),
+      },
+      {
+        $set: {
+          "subscriptions.$.name": req.body.name,
+        },
+      }
+    );
+    database.collection("videos").updateMany(
+      {
+        "user._id": ObjectId(req.session.user_id),
+      },
+      {
+        $set: {
+          "user.name": req.body.name,
+        },
+      },
+      (error, data) => {
+        res.redirect("/settings?message=success");
+      }
+    );
+  } else {
+    res.redirect("/login");
+  }
+});
 // app listening
 app.listen(port, () => {
   console.log("Server is started.....");

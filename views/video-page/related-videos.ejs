@@ -24,10 +24,14 @@
             var date = createdAt.getDate() + "";
             date = date.padStart(2, "0") + " " + months[createdAt.getMonth()] + ", " + createdAt.getFullYear();
 
-            html += '<div>';
-                html += '<img class="img-fluid" src="' + baseUrl + videos[a].thumbnail +'"/>';
-                html += '<p>'+videos[a].minutes + ":" +videos[a].seconds+'</p>';
-                html += '<h3><a href="/watch/'+ videos[a].watch + '">' + videos[a].title + '</a></h3>';
+            html += '<div class="d-flex mb-3">';
+                html += '<a href="/watch/'+ videos[a].watch + '"><img class="related__videosImage" src="' + baseUrl + videos[a].thumbnail +'"/></a>';
+                html += '<div class="ml-3 related__videosRight">';
+                    html += '<p class="bg-dark related__videosDuration">'+videos[a].minutes + ":" +videos[a].seconds+'</p>';
+                    html += '<h6><a href="/watch/'+ videos[a].watch + '" style="text-decoration:none;color:black;">' + videos[a].title + '</a></h6>';
+                    html += '<p class="mb-0">' + videos[a].user.name + '</p>';
+                    html += '<small>' + videos[a].views + ' views</small>';
+                html += '</div>';
             html += '</div>';
         }
 

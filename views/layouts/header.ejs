@@ -19,11 +19,12 @@
       type="text/css"
       href="/public/css/simple-sidebar.css"
     />
-    <link
+    <!-- <link
       rel="stylesheet"
       type="text/css"
       href="/public/font-awesome/css/font-awesome.min.css"
-    />
+    /> -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" integrity="sha512-+4zCK9k+qNFUR5X+cKL9EIR+ZOhtIloNl9GIKS57V1MyNsYpYcUrUeQc9vNfzsWfV28IaLL3i96P9sdNyeRssA==" crossorigin="anonymous" />
     <title>Video Streaming</title>
   </head>
   <body>
@@ -41,116 +42,6 @@
 
       const baseUrl = "http://localhost:3000/";
     </script>
-
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
-      <div class="container">
-        <a href="/" class="navbar-brand">Vloggar</a>
-
-        <div class="collapse navbar-collapse" id="navbarResponsive">
-          <ul class="navbar-nav ml-auto">
-            <% if (typeof isLogin !== "undefined" && isLogin) { %>
-
-              <script type="text/javascript">
-                const readNotification = (self) => {
-                  var _id = self.getAttribute("data-id");
-
-                  fetch("/read-notification", {
-                    "method": "POST", 
-                    headers: new Headers({'Content-Type': 'application/x-www-form-urlencoded'}),
-                    "body":"notificationId=" + _id,})
-                    .then( response => response.json() )
-                    .then(result => {
-                        if (result.status == "error"){
-                          alert(result.message)
-                        }
-                    });
-
-                    return true;
-                };
-
-                // fetch notifications for a particular user and display in dropdown
-                fetch("/get-user", {
-                    "method": "GET",})
-                    .then( response => response.json() )
-                    .then(result => {
-                      if (result.status == "success") {
-                        window.user = result.user;
-
-                        var html = "";
-                        html += '<div class="list-group list-group-flush">';
-                          html += '<a href="/channel/'+window.user._id+'" class="list-group-item list-group-item-action bg-light">My Channel</a>';
-                        html += '</div>';
-
-                        document.getElementById("sidebar-wrapper").innerHTML += html;
-
-                        var html = "";
-
-                        window.user.notifications = window.user.notifications.reverse();
-                        for (var a=0; a < window.user.notifications.length; a++) {
-                          var notification = window.user.notifications[a];
-
-                          if (!notification.is_read) {
-                            if (notification.type == "new_comment") {
-                              html += '<a class="dropdown-item" onclick="return readNotification(this);" data-id="' + notification._id + '" href="/watch/' + notification.video_watch + '">New comment</a>';
-
-                            }
-                          }
-                        }
-
-                        document.getElementById("unread-notifications").innerHTML = html;
-                      }else{
-                        alert(result.message);
-                      }
-                    })
-            </script>
-              
-              <li class="nav-item">
-                <div class="dropdown">
-                  <button 
-                  class="btn btn-secondary dropdown-toggle" 
-                  type="button" 
-                  id="dropdownMenuButton"
-                  data-toggle="dropdown"
-                  aria-haspopup="true"
-                  aria-expanded="false"
-                  >
-                  <i class="fa fa-bell fa-fw" style="color: white;"></i>
-                </button>
-                
-                <div class="dropdown-menu" 
-                id="unread-notifications"
-                aria-labelledby="dropdownMenuButton"
-                >
-
-                </div>
-
-                </div>
-              </li>
-
-              <li class="nav-item">
-                <a href="/upload" class="nav-link">Upload Video</a>
-              </li>
-              
-              <li class="nav-item">
-                <a href="/logout" class="nav-link">Logout</a>
-              </li>
-            <% } else { %> 
-
-            
-            <li class="nav-item">
-              <a href="/login" class="nav-link">Login</a>
-            </li>
-
-            <li class="nav-item">
-              <a href="/signup" class="nav-link">Signup</a>
-            </li>
-            <% } %> 
-          </ul>
-        </div>
-      </div>
-    </nav>
-    <!-- end of navbar -->
     
     <!-- Main Site Content -->
     <div class="d-flex" id="wrapper">
@@ -158,8 +49,136 @@
         <% if (typeof isLogin !== "undefined" && isLogin) { %>
           <div class="list-group list-group-flush">
             <a href="/watch-history" class="list-group-item list-group-item-action bg-light">History</a>
+            <a href="/my_subscriptions" class="list-group-item list-group-item-action bg-light">Subscribed Channels</a>
           </div>
-        <% } %>  
+        <% } %> 
       </div>
+
+      <div id="page-content-wrapper">
+        <!-- Navbar -->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+          <div class="container-fluid">
+            <div class="d-flex align-items-center">
+              <button class="btn text-white mr-4 nav__toggleButton" id="menu-toggle"><i class="fas fa-bars"></i></button>
+              <a href="/" class="navbar-brand"><b>Vloggar</b></a>
+            </div>
+
+            <div style="display: flex;align-items: center;flex-wrap: nowrap!important;position: relative;">
+              <form action="/search" class="form-inline" method="GET">
+                <div class="form-group">
+                    <input type="text" autocomplete="off" name="search_query" class="form-control">
+                </div>
+                <button type="submit" class="btn" style="position: absolute;left: 80%;"><i class="fas fa-search" style="color: black;"></i></button>
+              </form>
+            </div>
+
+            <div class="collapse navbar-collapse" id="navbarResponsive">
+              <ul class="navbar-nav ml-auto">
+                <% if (typeof isLogin !== "undefined" && isLogin) { %>
+
+                  <script type="text/javascript">
+                    const readNotification = (self) => {
+                      var _id = self.getAttribute("data-id");
+
+                      fetch("/read-notification", {
+                        "method": "POST", 
+                        headers: new Headers({'Content-Type': 'application/x-www-form-urlencoded'}),
+                        "body":"notificationId=" + _id,})
+                        .then( response => response.json() )
+                        .then(result => {
+                            if (result.status == "error"){
+                              alert(result.message)
+                            }
+                        });
+
+                        return true;
+                    };
+
+                    // fetch notifications for a particular user and display in dropdown
+                    fetch("/get-user", {
+                        "method": "GET",})
+                        .then( response => response.json() )
+                        .then(result => {
+                          if (result.status == "success") {
+                            window.user = result.user;
+
+                            var html = "";
+                            html += '<div class="list-group list-group-flush">';
+                              html += '<a href="/channel/'+window.user._id+'" class="list-group-item list-group-item-action bg-light">My Channel</a>';
+                            html += '</div>';
+
+                            document.getElementById("sidebar-wrapper").innerHTML += html;
+
+                            var html = "";
+
+                            window.user.notifications = window.user.notifications.reverse();
+                            for (var a=0; a < window.user.notifications.length; a++) {
+                              var notification = window.user.notifications[a];
+
+                              if (!notification.is_read) {
+                                if (notification.type == "new_comment") {
+                                  html += '<a class="dropdown-item" onclick="return readNotification(this);" data-id="' + notification._id + '" href="/watch/' + notification.video_watch + '">New comment</a>';
+
+                                }
+                              }
+                            }
+
+                            document.getElementById("unread-notifications").innerHTML = html;
+                          }else{
+                            alert(result.message);
+                          }
+                        })
+                </script>
+                  
+                  <li class="nav-item">
+                    <div class="dropdown">
+                      <button 
+                      class="btn btn-secondary dropdown-toggle" 
+                      type="button" 
+                      id="dropdownMenuButton"
+                      data-toggle="dropdown"
+                      aria-haspopup="true"
+                      aria-expanded="false"
+                      >
+                      <i class="fa fa-bell fa-fw" style="color: white;"></i>
+                    </button>
+                    
+                    <div class="dropdown-menu" 
+                    id="unread-notifications"
+                    aria-labelledby="dropdownMenuButton"
+                    >
+
+                    </div>
+
+                    </div>
+                  </li>
+
+                  <li class="nav-item">
+                    <a href="/upload" class="nav-link">Upload Video</a>
+                  </li>
+
+                  <li class="nav-item">
+                    <a href="/settings" class="nav-link">Settings</a>
+                  </li>
+                  
+                  <li class="nav-item">
+                    <a href="/logout" class="nav-link">Logout</a>
+                  </li>
+                <% } else { %> 
+
+                
+                <li class="nav-item">
+                  <a href="/login" class="nav-link">Login</a>
+                </li>
+
+                <li class="nav-item">
+                  <a href="/signup" class="nav-link">Signup</a>
+                </li>
+                <% } %> 
+              </ul>
+            </div>
+          </div>
+        </nav>
+        <!-- end of navbar -->
 
     

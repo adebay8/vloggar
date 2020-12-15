@@ -10,10 +10,10 @@ body {
 #sidebar-wrapper {
   min-height: 100vh;
   margin-left: -15rem;
-  -webkit-transition: margin .25s ease-out;
-  -moz-transition: margin .25s ease-out;
-  -o-transition: margin .25s ease-out;
-  transition: margin .25s ease-out;
+  -webkit-transition: margin 0.25s ease-out;
+  -moz-transition: margin 0.25s ease-out;
+  -o-transition: margin 0.25s ease-out;
+  transition: margin 0.25s ease-out;
 }
 
 #sidebar-wrapper .sidebar-heading {
@@ -46,4 +46,9 @@ body {
   #wrapper.toggled #sidebar-wrapper {
     margin-left: -15rem;
   }
+}
+
+#menu-toggle:focus {
+  outline-width: 0 !important;
+  outline-color: none;
 }

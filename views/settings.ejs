@@ -1,0 +1,24 @@
+<%- include ("layouts/header") %> 
+<div class="container my-4">
+    <div class="row">
+        <div class="col-md-12">
+            <form action="/save_settings" method="POST">
+                <% if (typeof request.message !== "undefined" && request.message == "success") {%>
+                    <div class="alert alert-success">
+                        Settings has been saved.
+                    </div>                
+                <% } %>
+                <div class="form-group">
+                    <label>Name</label>
+                    <input name="name" value="<%= user.name %>" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="">Password (Leave blank if no change</label>
+                    <input name="password" class="form-control" placeholder="*******" type="password">
+                </div>
+                <input type="submit" class="btn btn-primary" value="Save Changes">
+            </form>
+        </div>
+    </div>
+</div>
+<%- include ("layouts/footer") %> 

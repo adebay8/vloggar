@@ -33,3 +33,21 @@ body {
   height: 60px;
   border-radius: 50%;
 }
+
+.related__videosImage {
+  width: 180px !important;
+  height: 100px !important;
+}
+
+.related__videosRight {
+  position: relative;
+}
+
+.related__videosDuration {
+  position: absolute;
+  left: -55px;
+  top: 65px;
+  padding: 2px;
+  color: white;
+  border-radius: 3px;
+}
